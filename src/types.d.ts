@@ -7,7 +7,8 @@ declare namespace StrategicCache {
   }
 
   interface GetOptions {
-    strategy?: CacheStrategiesEnum
+    strategy?: CacheStrategiesEnum,
+    fetchFunction?: Function
   }
 
   enum CacheStrategiesEnum {
@@ -34,7 +35,7 @@ declare namespace StrategicCache {
 
   interface Cache extends Store {
     // Get the entry value of the given key
-    get(key: string, fetchFunction?: Function, options?: GetOptions): Promise<unknown | undefined>
+    get(key: string, options?: GetOptions): Promise<unknown | undefined>
     // Get all entry keys in the cache
     keys(): string[] | Promise<string[]>
     // Set an entry for the given key
