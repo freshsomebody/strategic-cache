@@ -13,8 +13,8 @@ declare namespace StrategicCache {
   enum CacheStrategies {
     StaleWhileRevalidate,
     CacheFirst,
-    NetworkFirst,
-    NetworkOnly,
+    FetchFirst,
+    FetchOnly,
     CacheOnly
   }
 
@@ -34,7 +34,7 @@ declare namespace StrategicCache {
 
   interface Cache extends Store {
     // Get the entry value of the given key
-    get(key: string, networkFunction?: Function, options?: GetOptions): Promise<unknown | undefined>
+    get(key: string, fetchFunction?: Function, options?: GetOptions): Promise<unknown | undefined>
     // Get all entry keys in the cache
     keys(): string[] | Promise<string[]>
     // Set an entry for the given key
