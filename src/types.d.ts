@@ -7,10 +7,10 @@ declare namespace StrategicCache {
   }
 
   interface GetOptions {
-    strategy?: CacheStrategies
+    strategy?: CacheStrategiesEnum
   }
 
-  enum CacheStrategies {
+  enum CacheStrategiesEnum {
     StaleWhileRevalidate,
     CacheFirst,
     FetchFirst,
