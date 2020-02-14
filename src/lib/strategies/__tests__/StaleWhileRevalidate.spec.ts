@@ -2,7 +2,7 @@ import StaleWhileRevalidate from '../StaleWhileRevalidate'
 import flushPromises from 'flush-promises'
 import storeFactory, { cachedValue, fetchedValue } from './mocks/storeFactory'
 
-describe('~/lib/strategies/strategies.ts', () => {
+describe('~/lib/strategies/StaleWhileRevalidate.ts', () => {
   it('returns cached value if cache hit. Then set cache', async () => {
     const store = storeFactory()
     const mockFetchFunction = jest.fn(() => Promise.resolve(fetchedValue))
