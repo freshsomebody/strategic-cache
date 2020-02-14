@@ -1,20 +1,8 @@
 import StaleWhileRevalidate from '../StaleWhileRevalidate'
 import flushPromises from 'flush-promises'
+import storeFactory, { cachedValue, fetchedValue } from './mocks/storeFactory'
 
 describe('~/lib/strategies/strategies.ts', () => {
-  const cachedValue = 'cachedValue'
-  const fetchedValue = 'fetchedValue'
-  function storeFactory (override: Object = {}): StrategicCache.Store {
-    const defaultStore: StrategicCache.Store = {
-      get: jest.fn(() => cachedValue),
-      set: jest.fn(),
-      keys: jest.fn(() => []),
-      delete: jest.fn(),
-      flush: jest.fn()
-    }
-    return { ...defaultStore, ...override }
-  }
-
   it('returns cached value if cache hit. Then set cache', async () => {
     const store = storeFactory()
     const mockFetchFunction = jest.fn(() => Promise.resolve(fetchedValue))
