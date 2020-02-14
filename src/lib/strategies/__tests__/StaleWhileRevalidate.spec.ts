@@ -24,11 +24,12 @@ describe('~/lib/strategies/strategies.ts', () => {
 
   it('calls fetchErrorHandler if an error occur when fetching', async () => {
     const store = storeFactory()
-    const mockFetchFunction = jest.fn(() => Promise.reject('error'))
+    const error = new Error('error')
+    const mockFetchFunction = jest.fn(() => Promise.reject(error))
     const mockFetchErrorFunction = jest.fn()
 
-    const result = await StaleWhileRevalidate(store, 'key', mockFetchFunction, mockFetchErrorFunction)
+    await StaleWhileRevalidate(store, 'key', mockFetchFunction, mockFetchErrorFunction)
     await flushPromises()
-    expect(mockFetchErrorFunction).toHaveBeenCalledWith('error')
+    expect(mockFetchErrorFunction).toHaveBeenCalledWith(error)
   })
 })
