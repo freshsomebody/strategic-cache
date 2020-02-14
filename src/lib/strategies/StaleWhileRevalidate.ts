@@ -18,7 +18,7 @@ export default async function StaleWhileRevalidate (cacheStore: StrategicCache.S
         if (fetchErrorHandler) {
           fetchErrorHandler(error)
         } else {
-          console.log('Failed to revalidate the cache: ', error)
+          console.error('Failed to revalidate the cache: ', error)
         }
       })
   } else {
@@ -30,7 +30,7 @@ export default async function StaleWhileRevalidate (cacheStore: StrategicCache.S
       if (fetchErrorHandler) {
         fetchErrorHandler(error)
       } else {
-        console.log('Failed to revalidate the cache: ', error)
+        console.error('Failed to revalidate the cache: ', error)
       }
     }
   }
