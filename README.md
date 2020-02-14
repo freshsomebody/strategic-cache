@@ -12,11 +12,11 @@
 [] Cache
 - Core methods
   - [] get
-    - [] StaleWhileRevalidate
-    - [] CacheFirst
-    - [] NetworkFirst
-    - [] NetworkOnly
-    - [] CacheOnly
+    - [x] StaleWhileRevalidate
+    - [x] CacheFirst
+    - [x] NetworkFirst
+    - [x] NetworkOnly
+    - [x] CacheOnly
   - [] set
   - [] keys
   - [] delete
