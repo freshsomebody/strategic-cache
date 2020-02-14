@@ -8,7 +8,8 @@ declare namespace StrategicCache {
 
   interface GetOptions {
     strategy?: CacheStrategiesEnum,
-    fetchFunction?: Function
+    fetchFunction?: Function,
+    fetchErrorFunction?: Function
   }
 
   enum CacheStrategiesEnum {
