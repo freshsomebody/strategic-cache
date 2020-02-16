@@ -1,5 +1,3 @@
-import { cacheOptionValidator } from '../utils/utils'
-
 interface StoreNode {
   value: unknown,
   lastUpdatedAt: number,
@@ -17,12 +15,10 @@ export default class MemoryStore implements StrategicCache.Store {
   head: string | null
   tail: string | null
 
-  constructor (overrideOptions: StrategicCache.CacheOptions = {}) {
-    const options = cacheOptionValidator(overrideOptions)
-
+  constructor (options: StrategicCache.CacheOptions = {}) {
     this.store = {}
-    this.maxAgeSeconds = options.maxAgeSeconds
-    this.maxEntries = options.maxEntries
+    this.maxAgeSeconds = options.maxAgeSeconds || 0
+    this.maxEntries = options.maxEntries || 0
 
     this.head = null
     this.tail = null
