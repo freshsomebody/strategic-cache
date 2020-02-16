@@ -18,21 +18,21 @@ declare namespace StrategicCache {
    * @todo Find out why ts-jest throws error if using enum
    */
   type BuildinStore = 'memory'
-  /*const enum BuildinStoresEnum {
+  /* const enum BuildinStoresEnum {
     Memory = 'memory'
-  }*/
+  } */
 
   /**
    * @todo Find out why ts-jest throws error if using enum
    */
   type CacheStrategie = 'StaleWhileRevalidate' | 'CacheFirst' | 'FetchFirst' | 'FetchOnly' | 'CacheOnly'
-  /*enum CacheStrategiesEnum {
+  /* enum CacheStrategiesEnum {
     StaleWhileRevalidate,
     CacheFirst,
     FetchFirst,
     FetchOnly,
     CacheOnly
-  }*/
+  } */
 
   // The minimum requirements of a Store
   interface Store {
