@@ -2,23 +2,37 @@
 
 declare namespace StrategicCache {
   interface CacheOptions {
+    store?: BuildinStore | { create: (options: CacheOptions) => Store },
+    fallbackStore?: BuildinStore | false
     maxAgeSeconds?: number
     maxEntries?: number
   }
 
   interface GetOptions {
-    strategy?: CacheStrategiesEnum,
+    strategy?: CacheStrategie,
     fetchFunction?: Function,
     fetchErrorFunction?: Function
   }
 
-  enum CacheStrategiesEnum {
+  /**
+   * @todo Find out why ts-jest throws error if using enum
+   */
+  type BuildinStore = 'memory'
+  /*const enum BuildinStoresEnum {
+    Memory = 'memory'
+  }*/
+
+  /**
+   * @todo Find out why ts-jest throws error if using enum
+   */
+  type CacheStrategie = 'StaleWhileRevalidate' | 'CacheFirst' | 'FetchFirst' | 'FetchOnly' | 'CacheOnly'
+  /*enum CacheStrategiesEnum {
     StaleWhileRevalidate,
     CacheFirst,
     FetchFirst,
     FetchOnly,
     CacheOnly
-  }
+  }*/
 
   // The minimum requirements of a Store
   interface Store {
