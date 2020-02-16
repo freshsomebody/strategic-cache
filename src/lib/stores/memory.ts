@@ -5,7 +5,7 @@ interface StoreNode {
   prev: string | null
 }
 
-export default class MemoryStore implements StrategicCache.Store {
+export class MemoryStore implements StrategicCache.Store {
   store: {
     [key: string]: StoreNode
   }
@@ -192,4 +192,8 @@ export default class MemoryStore implements StrategicCache.Store {
     }
     return this.store[key].lastUpdatedAt < (Date.now() - this.maxAgeSeconds * 1000)
   }
+}
+
+export default {
+  create: (options?: StrategicCache.CacheOptions) => new MemoryStore(options)
 }
