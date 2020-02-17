@@ -3,6 +3,13 @@ import flushPromises from 'flush-promises'
 import storeFactory, { cachedValue, fetchedValue } from './mocks/storeFactory'
 
 describe('~/lib/strategies/StaleWhileRevalidate.ts', () => {
+  it('throws error if fetchFunction is invalid', async () => {
+    const store = storeFactory()
+
+    await expect(StaleWhileRevalidate(store, 'key')).rejects.toThrow()
+    await expect(StaleWhileRevalidate(store, 'key', 'not a function')).rejects.toThrow()
+  })
+
   it('returns cached value if cache hit. Then set cache', async () => {
     const store = storeFactory()
     const mockFetchFunction = jest.fn(() => Promise.resolve(fetchedValue))
