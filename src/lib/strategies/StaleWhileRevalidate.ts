@@ -7,6 +7,10 @@
  * @param fetchErrorHandler function for handling fetch error
  */
 export default async function StaleWhileRevalidate (cacheStore: StrategicCache.Store, key: string, fetchFunction: Function, fetchErrorHandler?: Function) {
+  if (typeof fetchFunction !== 'function') {
+    throw new TypeError("'fetchFunction' is not a function.")
+  }
+
   let cacheValue = await cacheStore.get(key)
   const networkFunctionPromise = async () => fetchFunction()
 
