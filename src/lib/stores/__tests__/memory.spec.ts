@@ -35,6 +35,12 @@ describe('~/lib/stores/memory.ts', () => {
     expect(testStore.store.k2.value).toBe('v2')
     expect(testStore.head).toBe('k2')
     expect(testStore.tail).toBe('k1')
+
+    // Prevent setting an entry to undefined
+    testStore.set('k2')
+    expect(testStore.store.k2.value).toBe('v2')
+    testStore.set('k2', undefined)
+    expect(testStore.store.k2.value).toBe('v2')
   })
 
   it('.set method deletes expired and LRU entries', () => {
