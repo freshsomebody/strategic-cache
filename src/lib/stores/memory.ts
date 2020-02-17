@@ -29,7 +29,8 @@ export class MemoryStore implements StrategicCache.Store {
    * @param key key of the entry to be got
    */
   get (key: string): unknown | undefined {
-    if (!this.store[key] || this.isExpired(key)) {
+    if (!this.store[key] || this.isExpired(key) || this.store[key].value === undefined) {
+      this.delete(key)
       return undefined
     }
     const { value } = this.store[key]
@@ -51,6 +52,10 @@ export class MemoryStore implements StrategicCache.Store {
    * @param value entry value to be set
    */
   set (key: string, value: unknown) {
+    if (value === undefined) {
+      return
+    }
+
     if (this.maxAgeSeconds > 0 || this.maxEntries > 0) {
       this.deleteStaleEntries()
     }
