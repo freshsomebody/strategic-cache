@@ -97,7 +97,7 @@ const myCache = new StrategicCache({
 })
 ```
 
-### fallbackStore: 'memory' | false
+#### fallbackStore: 'memory' | false
 When cacheOptions.store is invalid, strategic-cache will try to create the cache with the fallbackStore. It is `'memory'` in default which means to use build-in memory store as the fallbackStore.
 
 If you set cacheOptions.fallbackStore to false, strategic-cache will throw error immediately when it fails to create the cache with the given cacheOptions.store.
@@ -109,7 +109,7 @@ const strategicCache = new StrategicCache({
 // Throw TypeError
 ```
 
-### maxAgeSeconds: number
+#### maxAgeSeconds: number
 The maximum age of a cache entry in seconds. It is `0` in default which means maxAgeSeconds disabled.
 ```javascript
 const strategicCache = new StrategicCache({
@@ -117,7 +117,7 @@ const strategicCache = new StrategicCache({
 })
 ```
 
-### maxEntries: number
+#### maxEntries: number
 The maximum etnries allowed in the cache. It is `0` in default which means maxEntries disabled
 ```javascript
 const strategicCache = new StrategicCache({
