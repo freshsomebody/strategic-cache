@@ -3,7 +3,8 @@
     "outDir": "./dist",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "lib": ["es2015"]
+    "lib": ["es2015"],
+    "declaration": true
   },
   "include": [
     "src/"
@@ -11,7 +12,9 @@
   "exclude": [
     "node_modules/",
     "dist/",
-    "tests",
-    "__tests__"
+    "tests/",
+    "__tests__/",
+    "src/**/tests/",
+    "src/**/__tests__/"
   ]
 }
