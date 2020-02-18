@@ -24,7 +24,8 @@ describe('~/cache.ts', () => {
 
     // Create with given options
     const mockStore = {
-      create: jest.fn()
+      get: () => 1,
+      set: () => undefined
     }
     let cacheOption: StrategicCache.CacheOptions = {
       store: mockStore,
@@ -33,7 +34,7 @@ describe('~/cache.ts', () => {
       maxEntries: 3
     }
     testCache = new Cache(cacheOption)
-    expect(mockStore.create).toHaveBeenCalledWith(cacheOption)
+    expect(testCache.store).toEqual(mockStore)
 
     // Throw error if giving non-support stategy and disabling fallbackStore
     cacheOption = {

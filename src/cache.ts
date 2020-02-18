@@ -9,10 +9,11 @@ export default class Cache implements StrategicCache.Cache {
 
     const { store } = options
     if (typeof store === 'object') {
-      this.store = store.create(options)
+      this.store = store
     } else {
-      const storeModule = require(`./lib/stores/${store || 'memory'}`)
-      this.store = storeModule.create ? storeModule.create(options) : storeModule.default.create(options)
+      let StoreModule = require(`./lib/stores/${store || 'memory'}`)
+      StoreModule = StoreModule.default ? StoreModule.default : StoreModule
+      this.store = new StoreModule(options)
     }
   }
 

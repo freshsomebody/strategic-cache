@@ -3,7 +3,7 @@ import MemoryStore from '../memory'
 describe('~/lib/stores/memory.ts', () => {
   it('constructor sets states correctly', () => {
     // Default
-    let testStore = MemoryStore.create()
+    let testStore = new MemoryStore()
     expect(testStore.store).toMatchObject({})
     expect(testStore.maxAgeSeconds).toBe(0)
     expect(testStore.maxEntries).toBe(0)
@@ -15,13 +15,13 @@ describe('~/lib/stores/memory.ts', () => {
       maxAgeSeconds: 1,
       maxEntries: 2
     }
-    testStore = MemoryStore.create(options)
+    testStore = new MemoryStore(options)
     expect(testStore.maxAgeSeconds).toBe(1)
     expect(testStore.maxEntries).toBe(2)
   })
 
   it('.set method sets store correctly', () => {
-    const testStore = MemoryStore.create()
+    const testStore = new MemoryStore()
     // add the first entry
     testStore.set('k1', 'v1')
     expect(testStore.store.k1).toBeDefined()
@@ -48,7 +48,7 @@ describe('~/lib/stores/memory.ts', () => {
     let options: StrategicCache.CacheOptions = {
       maxAgeSeconds: 60
     }
-    let testStore = MemoryStore.create(options)
+    let testStore = new MemoryStore(options)
     // Add dummy data
     testStore.set('k1', 'v1')
     testStore.set('k2', 'v2')
@@ -69,7 +69,7 @@ describe('~/lib/stores/memory.ts', () => {
     options = {
       maxEntries: 2
     }
-    testStore = MemoryStore.create(options)
+    testStore = new MemoryStore(options)
     testStore.set('k1', 'v1')
     testStore.set('k2', 'v2')
     testStore.set('k3', 'v3')
@@ -80,7 +80,7 @@ describe('~/lib/stores/memory.ts', () => {
   })
 
   it('.get method returns correctly', () => {
-    let testStore = MemoryStore.create()
+    let testStore = new MemoryStore()
     // Cache miss
     expect(testStore.get('k1')).toBe(undefined)
     // Cache hit
@@ -91,7 +91,7 @@ describe('~/lib/stores/memory.ts', () => {
     const options: StrategicCache.CacheOptions = {
       maxAgeSeconds: 60
     }
-    testStore = MemoryStore.create(options)
+    testStore = new MemoryStore(options)
     testStore.set('k1', 'v1')
     // Make k1 expired
     testStore.store.k1.lastUpdatedAt = Date.now() - 120 * 1000
@@ -99,7 +99,7 @@ describe('~/lib/stores/memory.ts', () => {
   })
 
   it('.get method moves entry to head', () => {
-    const testStore = MemoryStore.create()
+    const testStore = new MemoryStore()
     // Add dummy data
     testStore.set('k1', 'v1')
     testStore.set('k2', 'v2')
@@ -117,7 +117,7 @@ describe('~/lib/stores/memory.ts', () => {
   })
 
   it('.keys method returns all entries keys', () => {
-    const testStore = MemoryStore.create()
+    const testStore = new MemoryStore()
     // Add dummy data
     testStore.set('k1', 'v1')
     testStore.set('k2', 'v2')
@@ -127,7 +127,7 @@ describe('~/lib/stores/memory.ts', () => {
   })
 
   it('.delete method deletes the entry of given key', () => {
-    const testStore = MemoryStore.create()
+    const testStore = new MemoryStore()
     // Add dummy data
     // head -> k3 <-> k2 <-> k1 <- tail
     testStore.set('k1', 'v1')
@@ -166,7 +166,7 @@ describe('~/lib/stores/memory.ts', () => {
   })
 
   it('.flush method deletes all entries and resets head, tail', () => {
-    const testStore = MemoryStore.create()
+    const testStore = new MemoryStore()
     // Add dummy data
     testStore.set('k1', 'v1')
     testStore.set('k2', 'v2')
