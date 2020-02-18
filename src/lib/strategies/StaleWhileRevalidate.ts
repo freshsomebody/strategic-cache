@@ -29,7 +29,7 @@ export default async function StaleWhileRevalidate (cacheStore: StrategicCache.S
     // If cache miss => wait for revalidation
     try {
       cacheValue = await networkFunctionPromise()
-      cacheStore.set(key, cacheValue)
+      await cacheStore.set(key, cacheValue)
     } catch (error) {
       if (fetchErrorHandler) {
         fetchErrorHandler(error)
