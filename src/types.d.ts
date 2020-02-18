@@ -2,7 +2,7 @@
 
 declare namespace StrategicCache {
   interface CacheOptions {
-    store?: BuildinStore | { create: (options: CacheOptions) => Store },
+    store?: 'memory' | Store,
     fallbackStore?: BuildinStore | false
     maxAgeSeconds?: number
     maxEntries?: number
