@@ -1,4 +1,6 @@
 # Strategic Cache
+[![Build Status](https://travis-ci.com/freshsomebody/strategic-cache.svg?branch=master)](https://travis-ci.com/freshsomebody/strategic-cache)
+
 `strategic-cache` is a cache module that equips various [Workbox-like cache strategies](https://developers.google.com/web/tools/workbox/modules/workbox-strategies) to allow you to determine how and when to response and/or update cache data easily. Besides, its cache implementation is separated from the application interface, which means you can use any cache store you want, as long as it fits with the interface.
 
 ## Installation
