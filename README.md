@@ -263,4 +263,32 @@ const cacheValue1 = strategicCache.get('cacheKey', {
 // Log 'Something wrong!'
 ```
 
-... Document constructing ...
+### Set data
+Use `.set` method
+```javascript
+strategicCache.set(key: string, value: any)
+```
+- `key`: string - the key to be set
+- `value`: the value to be set
+
+### Get all the keys in the cache
+Use `.keys` method
+```javascript
+strategicCache.set('k1', 'v1')
+strategicCache.set('k2', 'v2')
+
+console.log(strategicCache.keys()) // ['k1', 'k2']
+```
+
+### Delete a key from the cache
+Use `.delete` method
+```javascript
+strategicCache.delete(key: string)
+```
+- `key`: string - the key to be deleted
+
+### Delete all data in the cache
+Use `.flush` method
+```javascript
+strategicCache.flush()
+```
