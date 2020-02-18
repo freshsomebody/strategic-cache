@@ -8,14 +8,14 @@ describe('~/lib/utils/validators.ts', () => {
 
     // Use fallback store if store is invalid
     verifiedOptions = cacheOptionValidator({
-      store: 'non-support' // This may cause IDE reporting errors
+      store: 'non-support'
     })
     expect(verifiedOptions.store).toBe(verifiedOptions.fallbackStore)
 
     // Throw error if receiving invalid store and fallbackStore is disabled
     expect(() => {
       cacheOptionValidator({
-        store: 'non-support', // This may cause IDE reporting errors
+        store: 'non-support',
         fallbackStore: false
       })
     }).toThrow()
