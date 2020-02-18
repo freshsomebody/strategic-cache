@@ -16,7 +16,7 @@ export function cacheOptionValidator (overrideOptions: StrategicCache.CacheOptio
       storeErrorMsg = buildinStores.includes(store) ? '' : `${store} is not a supported store.`
       break
     case 'object':
-      storeErrorMsg = store.create ? '' : "Cannot find 'create' method in your store"
+      storeErrorMsg = (!!store.get && !!store.set) ? '' : "'get' and 'set' methods are necessary for a store"
       break
     default:
       storeErrorMsg = `${typeof store}' is not a supported store type.`
