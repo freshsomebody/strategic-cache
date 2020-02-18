@@ -21,8 +21,7 @@ const strategicCache = new strategicCache()
 strategicCache.set('cacheKey', 'cacheValue')
 
 // Get data from the cache by strategy 'CacheOnly'
-const data = strategicCache.get('cacheKey')
-console.log(data) // log 'cacheValue'
+strategicCache.get('cacheKey').then(data => console.log(data)) // Log 'cacheValue'
 
 // Get all cache keys
 const keys = strategicCache.keys()
@@ -128,15 +127,21 @@ const strategicCache = new StrategicCache({
 ### Retrieve data
 You can use `.get` method to perform various retrieval strategies. strategic-cache provides an easy way for you to wrap you own data fetching function within `getOptions.fetchFunction` and decide when the cache should be updated by `getOptions.strategy`.
 ```javascript
-strategicCache.get(cacheKey: string, getOptions?: Object)
+strategicCache.get(cacheKey: string, getOptions?: Object): Promise<any>
 ```
-- cacheKey: string - the key of the cache you would like to get
-- getOptions: Object - set of options for `.get` method
+Inputs:
+- `cacheKey`: string - the key of the cache you would like to get
+- `getOptions`: Object - set of options for `.get` method
+
+Returns: **Promise<any>**
+
+> **NOTE**: `.get` method will always return **Promise** no matter what store or strategy you use.
+
 ```javascript
 getOptions = {
   strategy?: 'StaleWhileRevalidate' | 'CacheFirst' | 'FetchFirst' | 'FetchOnly' | 'CacheOnly',
   fetchFunction?: Function,
-  fetchErrorFunction?: Function
+  fetchErrorHandler?: Function
 }
 ```
 
@@ -150,11 +155,11 @@ The strategy mechanisms are implemented based on [Workbox strategis](https://dev
 strategicCache.get('cacheKey', {
   strategy: 'StaleWhileRevalidate',
   fetchFunction: () => 'fetchedValue',
-  fetchErrorFunction: (error) => console.log(error)
+  fetchErrorHandler: (error) => console.log(error)
 })
 ```
 Response with the cached data as quickly as possible if it is a cache hit. Otherwise, it falls back to response with the returns of `getOptions.fetchFunction`. Whether it's a cache hit or miss, `StaleWhileRevalidate` will update the cache with the returns of fetchFunction.
-> **NOTE:** `StaleWhileRevalidate` **MUST** work with `getOptions.fetchFunction` and **optionally** works with `getOptions.fetchErrorFunction`
+> **NOTE:** `StaleWhileRevalidate` **MUST** work with `getOptions.fetchFunction` and **optionally** works with `getOptions.fetchErrorHandler`
 
 - `CacheFirst` (map to [Workbox CacheFirst](https://developers.google.com/web/tools/workbox/modules/workbox-strategies#cache_first_cache_falling_back_to_network))
 ```javascript
@@ -190,5 +195,72 @@ strategicCache.get('cacheKey', {
 })
 ```
 Response only with the cached data. Note that `getOptions.fetchFunction` is not needed for this strategy since it will never be used.
+
+#### getOptions.fetchFunction: Function
+Your custom function you want strategic-cache to use to update cache or as a fallback. Depending on different strategies you set in [`getOptions.strategy`](#getoptionsstrategy-stalewhilerevalidate--cachefirst--fetchfirst--fetchonly--cacheonly), it will be executed in different conditions.
+
+fetchFunction should return a value since it will be treated as the response of `.get` method or used to update the cache. Otherwise, your cache will always be set to `undefined` and so as the `.get` responses.
+
+Here is an example of forgetting to return
+```javascript
+aync function badFetchFunction () {
+  const user = await UserModel.get()
+  // Without returning the data
+}
+
+// What will happen
+let cacheValue1
+strategicCache.get('cacheKey1', {
+  strategy: 'StaleWhileRevalidate',
+  fetchFunction: badFetchFunction
+}).then(value => cacheValue1 = value)
+// cacheValue1 will always be set to undefined
+
+let cacheValue2
+strategicCache.get('cacheKey2', {
+  strategy: 'NetworkFirst',
+  fetchFunction: badFetchFunction
+}).then(value => cacheValue2 = value)
+// cacheValue2 will always be undefined if badFetchFunction resolves
+
+let fetchedValue
+strategicCache.get('cacheKey3', {
+  strategy: 'NetworkOnly',
+  fetchFunction: badFetchFunction
+}).then(value => fetchedValue = value)
+// fetchedValue will always be undefined
+
+```
+To fix that, remember to return the data in your fetchFunction
+```javascript
+async function correctFetchFunction () {
+  const user = await UserModel.get()
+  return user() // <- remember to return
+}
+```
+
+You can also write your fetching logics in an anonymous function, like:
+```javascript
+const cacheValue1 = strategicCache.get(`usermodel_findname-${id}`, {
+  strategy: 'StaleWhileRevalidate',
+  fetchFunction: async () => {
+    const user = await UserModel.find(id)
+    return user.name // <- Remember to return
+  }
+})
+```
+
+#### getOptions.fetchErrorHandler: Function
+When using strategy `StaleWhileRevalidate`, `.get` will return cached data immediately if it's a cache hit. As the result, you cannot simply use try/catch the error of your fetchFunction.
+
+It may sometimes be fine to ignore the error of the fetchFunction, but if you want to deal with that, you can assign your handler function to `getOptions.fetchErrorHandler`. It will receive an an Error object if there is error occured in the fetchFucntion.
+```javascript
+const cacheValue1 = strategicCache.get('cacheKey', {
+  strategy: 'StaleWhileRevalidate',
+  fetchFunction: async () => Promise.reject(new Error('Something wrong!')),
+  fetchErrorHandler: (error) => console.error(error.message)
+})
+// Log 'Something wrong!'
+```
 
 ... Document constructing ...
