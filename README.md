@@ -1,4 +1,4 @@
-# Strategic Cache (Developing)
+# Strategic Cache
 `strategic-cache` is a cache module that equips various [Workbox-like cache strategies](https://developers.google.com/web/tools/workbox/modules/workbox-strategies) to allow you to determine how and when to response and/or update cache data easily. Besides, its cache implementation is separated from the application interface, which means you can use any cache store you want, as long as it fits with the interface.
 
 ## Installation
@@ -214,7 +214,7 @@ strategicCache.get('cacheKey1', {
   strategy: 'StaleWhileRevalidate',
   fetchFunction: badFetchFunction
 }).then(value => cacheValue1 = value)
-// cacheValue1 will always be set to undefined
+// value of cacheKey1 will always be set to undefined
 
 let cacheValue2
 strategicCache.get('cacheKey2', {
