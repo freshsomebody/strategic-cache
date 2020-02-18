@@ -21,14 +21,14 @@ export default class Cache implements StrategicCache.Cache {
     const defaultOptions: StrategicCache.GetOptions = {
       strategy: 'CacheOnly',
       fetchFunction: null,
-      fetchErrorFunction: null
+      fetchErrorHandler: null
     }
     const options = { ...defaultOptions, ...overrideOptions }
 
     const { strategy, fetchFunction } = options
     switch (strategy) {
       case 'StaleWhileRevalidate':
-        return StaleWhileRevalidate(this.store, key, fetchFunction, options.fetchErrorFunction)
+        return StaleWhileRevalidate(this.store, key, fetchFunction, options.fetchErrorHandler)
       case 'CacheFirst':
         return CacheFirst(this.store, key, fetchFunction)
       case 'FetchFirst':

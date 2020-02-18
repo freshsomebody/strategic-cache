@@ -51,15 +51,15 @@ describe('~/cache.ts', () => {
   it('.get calls StaleWhileRevalidate if specified', async () => {
     const testCache = new Cache()
     const fetchFunction = jest.fn()
-    const fetchErrorFunction = jest.fn()
+    const fetchErrorHandler = jest.fn()
     const getOptions: StrategicCache.GetOptions = {
       strategy: 'StaleWhileRevalidate',
       fetchFunction,
-      fetchErrorFunction
+      fetchErrorHandler
     }
     const result = await testCache.get('key', getOptions)
     expect(result).toBe(swrResult)
-    expect(strategies.StaleWhileRevalidate).toHaveBeenCalledWith(testCache.store, 'key', fetchFunction, fetchErrorFunction)
+    expect(strategies.StaleWhileRevalidate).toHaveBeenCalledWith(testCache.store, 'key', fetchFunction, fetchErrorHandler)
   })
 
   it('.get calls CacheFirst if specified', async () => {

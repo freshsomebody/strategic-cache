@@ -11,7 +11,7 @@ declare namespace StrategicCache {
   interface GetOptions {
     strategy?: CacheStrategie,
     fetchFunction?: Function,
-    fetchErrorFunction?: Function
+    fetchErrorHandler?: Function
   }
 
   /**

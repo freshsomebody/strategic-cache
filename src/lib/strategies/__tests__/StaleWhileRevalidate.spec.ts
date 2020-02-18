@@ -33,10 +33,10 @@ describe('~/lib/strategies/StaleWhileRevalidate.ts', () => {
     const store = storeFactory()
     const error = new Error('error')
     const mockFetchFunction = jest.fn(() => Promise.reject(error))
-    const mockFetchErrorFunction = jest.fn()
+    const mockFetchErrorHandler = jest.fn()
 
-    await StaleWhileRevalidate(store, 'key', mockFetchFunction, mockFetchErrorFunction)
+    await StaleWhileRevalidate(store, 'key', mockFetchFunction, mockFetchErrorHandler)
     await flushPromises()
-    expect(mockFetchErrorFunction).toHaveBeenCalledWith(error)
+    expect(mockFetchErrorHandler).toHaveBeenCalledWith(error)
   })
 })
