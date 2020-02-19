@@ -46,6 +46,11 @@ declare namespace StrategicCache {
     delete(key: string): void | Promise<void>
     // Flush all the entry from a store
     flush(): void | Promise<void>
+
+    /**
+     * Mark a key if strategic-cache is fetching for it. Don't need to implement in the store.
+     */
+    _strategicCacheFetching?: { [key: string]: boolean }
   }
 
   interface Cache extends Store {
