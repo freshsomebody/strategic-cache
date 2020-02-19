@@ -1,7 +1,7 @@
 # Strategic Cache
 [![Build Status](https://travis-ci.com/freshsomebody/strategic-cache.svg?branch=master)](https://travis-ci.com/freshsomebody/strategic-cache)
 
-`strategic-cache` is a cache module that equips various [Workbox-like cache strategies](https://developers.google.com/web/tools/workbox/modules/workbox-strategies) to allow you to determine how and when to response and/or update cache data easily. Besides, its cache implementation is separated from the application interface, which means you can use any cache store you want, as long as it fits with the interface.
+`strategic-cache` is a cache module that equips various [Workbox-like cache strategies](https://developers.google.com/web/tools/workbox/modules/workbox-strategies) to allow you to determine how and when to response and/or update cache data easily. Additionally, its cache implementation is separated from the application interface, which means you can use any cache store you want, as long as it fits with the interface.
 
 ## Installation
 ```shell
@@ -63,7 +63,7 @@ cacheOptions = {
 #### cacheOptions.store: 'memory' | Object
 The store you expect strategic-cache to use. It is `'memory'` in default which means to use the build-in memory store.
 
-You can also pass your own store object which should be at least implemented .get and .set methods. For example:
+You can also pass your own store object which should be at least implemented `.get` and `.set` methods. For example:
 ```javascript
 // myStore.js
 export default class MyStore {
@@ -97,6 +97,7 @@ const myCache = new StrategicCache({
   })
 })
 ```
+Note that here we directly pass the `maxAgeSeconds` and `maxEntries` to MyStore because strategic-cache cannot know what parameters your store needs.
 
 #### cacheOptions.fallbackStore: 'memory' | false
 When cacheOptions.store is invalid, strategic-cache will try to create the cache with the fallbackStore. It is `'memory'` in default which means to use build-in memory store as the fallbackStore.
@@ -205,7 +206,7 @@ fetchFunction should return a value since it will be treated as the response of 
 
 Here is an example of forgetting to return
 ```javascript
-aync function badFetchFunction () {
+async function badFetchFunction () {
   const user = await UserModel.get()
   // Without returning the data
 }
@@ -255,7 +256,7 @@ const cacheValue1 = strategicCache.get(`usermodel_findname-${id}`, {
 #### getOptions.fetchErrorHandler: Function
 When using strategy `StaleWhileRevalidate`, `.get` will return cached data immediately if it's a cache hit. As the result, you cannot simply use try/catch the error of your fetchFunction.
 
-It may sometimes be fine to ignore the error of the fetchFunction, but if you want to deal with that, you can assign your handler function to `getOptions.fetchErrorHandler`. It will receive an an Error object if there is error occured in the fetchFucntion.
+It may sometimes be fine to ignore the error of the fetchFunction, but if you want to deal with that, you can assign your handler function to `getOptions.fetchErrorHandler`. It will receive an an Error object if there is an error occured in the fetchFucntion.
 ```javascript
 const cacheValue1 = strategicCache.get('cacheKey', {
   strategy: 'StaleWhileRevalidate',
