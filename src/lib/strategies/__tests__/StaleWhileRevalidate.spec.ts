@@ -2,6 +2,8 @@ import StaleWhileRevalidate from '../StaleWhileRevalidate'
 import flushPromises from 'flush-promises'
 import storeFactory, { cachedValue, fetchedValue } from './mocks/storeFactory'
 
+jest.useFakeTimers()
+
 describe('~/lib/strategies/StaleWhileRevalidate.ts', () => {
   it('throws error if fetchFunction is invalid', async () => {
     const store = storeFactory()
@@ -27,6 +29,26 @@ describe('~/lib/strategies/StaleWhileRevalidate.ts', () => {
     const result = await StaleWhileRevalidate(store, 'key', mockFetchFunction)
     expect(result).toBe(fetchedValue)
     expect(store.set).toHaveBeenCalledWith('key', fetchedValue)
+  })
+
+  it('debounces fetching if there is one has not resolved', async () => {
+    const store = storeFactory()
+    const mockFetchFunctionSlow = jest.fn(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(fetchedValue)
+        }, 3000)
+      })
+    })
+    await StaleWhileRevalidate(store, 'key', mockFetchFunctionSlow)
+
+    const mockFetchFunction = jest.fn(() => Promise.resolve(`${fetchedValue}_later`))
+    await StaleWhileRevalidate(store, 'key', mockFetchFunction)
+
+    jest.runAllTimers()
+    await flushPromises()
+    expect(store.set).toHaveBeenCalledWith('key', fetchedValue)
+    expect(mockFetchFunction).not.toHaveBeenCalled()
   })
 
   it('calls fetchErrorHandler if an error occur when fetching', async () => {
