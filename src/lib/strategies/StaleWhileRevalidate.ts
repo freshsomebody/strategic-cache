@@ -13,6 +13,10 @@ export default async function StaleWhileRevalidate (cacheStore: StrategicCache.S
 
   let cacheValue = await cacheStore.get(key)
 
+  if (!cacheStore._strategicCacheFetching) {
+    cacheStore._strategicCacheFetching = {}
+  }
+
   // If cache hit => don't wait for revalidation
   if (cacheValue !== undefined) {
     fetchPromiseWrapper(cacheStore, key, fetchFunction, fetchErrorHandler)
@@ -31,13 +35,20 @@ export default async function StaleWhileRevalidate (cacheStore: StrategicCache.S
  * @param fetchErrorHandler function for handling fetch error
  */
 async function fetchPromiseWrapper (cacheStore: StrategicCache.Store, key: string, fetchFunction: Function, fetchErrorHandler?: Function) {
+  if (cacheStore._strategicCacheFetching[key]) {
+    return
+  }
+
   try {
+    cacheStore._strategicCacheFetching[key] = true
     const fetchedResult = await fetchFunction()
     await cacheStore.set(key, fetchedResult)
+    delete cacheStore._strategicCacheFetching[key]
     return fetchedResult
   } catch (error) {
     if (fetchErrorHandler) {
       fetchErrorHandler(error)
     }
+    delete cacheStore._strategicCacheFetching[key]
   }
 }
