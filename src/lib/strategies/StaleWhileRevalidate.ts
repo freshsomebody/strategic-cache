@@ -12,31 +12,32 @@ export default async function StaleWhileRevalidate (cacheStore: StrategicCache.S
   }
 
   let cacheValue = await cacheStore.get(key)
-  const networkFunctionPromise = async () => fetchFunction()
 
   // If cache hit => don't wait for revalidation
   if (cacheValue !== undefined) {
-    networkFunctionPromise()
-      .then(RevalidatedValue => cacheStore.set(key, RevalidatedValue))
-      .catch(error => {
-        if (fetchErrorHandler) {
-          fetchErrorHandler(error)
-        } else {
-          console.error('Failed to revalidate the cache: ', error)
-        }
-      })
+    fetchPromiseWrapper(cacheStore, key, fetchFunction, fetchErrorHandler)
   } else {
     // If cache miss => wait for revalidation
-    try {
-      cacheValue = await networkFunctionPromise()
-      await cacheStore.set(key, cacheValue)
-    } catch (error) {
-      if (fetchErrorHandler) {
-        fetchErrorHandler(error)
-      } else {
-        console.error('Failed to revalidate the cache: ', error)
-      }
-    }
+    cacheValue = await fetchPromiseWrapper(cacheStore, key, fetchFunction, fetchErrorHandler)
   }
   return cacheValue
+}
+
+/**
+ * Wrap the fetchFunction in an async function
+ * @param cacheStore cache store
+ * @param key cache key
+ * @param fetchFunction fetching function for cache miss fallback and updating cache
+ * @param fetchErrorHandler function for handling fetch error
+ */
+async function fetchPromiseWrapper (cacheStore: StrategicCache.Store, key: string, fetchFunction: Function, fetchErrorHandler?: Function) {
+  try {
+    const fetchedResult = await fetchFunction()
+    await cacheStore.set(key, fetchedResult)
+    return fetchedResult
+  } catch (error) {
+    if (fetchErrorHandler) {
+      fetchErrorHandler(error)
+    }
+  }
 }
