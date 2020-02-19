@@ -30,13 +30,24 @@ describe('~/lib/strategies/StaleWhileRevalidate.ts', () => {
   })
 
   it('calls fetchErrorHandler if an error occur when fetching', async () => {
-    const store = storeFactory()
+    // Test cache hit
+    let store = storeFactory()
     const error = new Error('error')
     const mockFetchFunction = jest.fn(() => Promise.reject(error))
-    const mockFetchErrorHandler = jest.fn()
+    const mockFetchErrorHandler1 = jest.fn()
 
-    await StaleWhileRevalidate(store, 'key', mockFetchFunction, mockFetchErrorHandler)
+    let result = await StaleWhileRevalidate(store, 'key', mockFetchFunction, mockFetchErrorHandler1)
     await flushPromises()
-    expect(mockFetchErrorHandler).toHaveBeenCalledWith(error)
+    expect(result).toBe(cachedValue)
+    expect(mockFetchErrorHandler1).toHaveBeenCalledWith(error)
+
+    // Test cache miss
+    store = storeFactory({ get: jest.fn(() => undefined) })
+    const mockFetchErrorHandler2 = jest.fn()
+
+    result = await StaleWhileRevalidate(store, 'key', mockFetchFunction, mockFetchErrorHandler2)
+    await flushPromises()
+    expect(result).toBeUndefined()
+    expect(mockFetchErrorHandler2).toHaveBeenCalledWith(error)
   })
 })
