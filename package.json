@@ -4,6 +4,7 @@
   "description": "A cache module equips with rich cache strategies",
   "main": "dist/index.js",
   "types": "dist/types.d.ts",
+  "repository": "https://github.com/freshsomebody/strategic-cache",
   "scripts": {
     "build": "rimraf dist && tsc && copyfiles -u 1 src/*.d.ts dist",
     "test": "jest",
