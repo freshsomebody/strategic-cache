@@ -3,7 +3,14 @@ export function cacheOptionValidator (overrideOptions: StrategicCache.CacheOptio
     store: 'memory',
     fallbackStore: 'memory',
     maxAgeSeconds: 0,
-    maxEntries: 0
+    maxEntries: 0,
+    storeMethodMapper: {
+      get: 'get',
+      keys: 'keys',
+      set: 'set',
+      delete: 'delete',
+      flush: 'flush'
+    }
   }
   const options = { ...defaultOptions, ...overrideOptions }
 
@@ -44,6 +51,16 @@ export function cacheOptionValidator (overrideOptions: StrategicCache.CacheOptio
   const { maxEntries } = options
   if (typeof maxEntries !== 'number' || maxEntries < 0) {
     options.maxEntries = 0
+  }
+
+  // Verify storeMethodMapper
+  const { storeMethodMapper: defaultMapper } = defaultOptions
+  const { storeMethodMapper: overridingMapper } = options
+  if (typeof overridingMapper !== 'object') {
+    options.storeMethodMapper = { ...defaultMapper }
+  } else {
+    // Deep merge storeMethodMapper
+    options.storeMethodMapper = { ...defaultMapper, ...overridingMapper }
   }
 
   return options
