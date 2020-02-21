@@ -5,7 +5,15 @@ declare namespace StrategicCache {
     store?: 'memory' | Store,
     fallbackStore?: BuildinStore | false
     maxAgeSeconds?: number
-    maxEntries?: number
+    maxEntries?: number,
+    storeMethodMapper?: StoreMethodMapper
+  }
+  interface StoreMethodMapper {
+    get?: string,
+    set?: string,
+    keys?: string,
+    delete?: string,
+    flush?: string
   }
 
   interface GetOptions {
@@ -54,6 +62,8 @@ declare namespace StrategicCache {
   }
 
   interface Cache extends Store {
+    store: Store
+    storeMethodMapper: StoreMethodMapper
     // Get the entry value of the given key
     get(key: string, options?: GetOptions): Promise<unknown | undefined>
     // Get all entry keys in the cache
