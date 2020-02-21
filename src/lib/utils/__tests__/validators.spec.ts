@@ -54,4 +54,33 @@ describe('~/lib/utils/validators.ts', () => {
     })
     expect(verifiedOptions.maxEntries).toBe(0)
   })
+
+  test('cacheOptionValidator verifies storeMethodMapper correctly', () => {
+    const defaultMapper = {
+      get: 'get',
+      keys: 'keys',
+      set: 'set',
+      delete: 'delete',
+      flush: 'flush'
+    }
+    // Returns {} if no option is given
+    let verifiedOptions = cacheOptionValidator()
+    expect(verifiedOptions.storeMethodMapper).toEqual(defaultMapper)
+
+    // Return given merged storeMethodMapper if storeMethodMapper is set in options
+    const overridingMapper = {
+      keys: 'key',
+      delete: 'del'
+    }
+    verifiedOptions = cacheOptionValidator({
+      storeMethodMapper: overridingMapper
+    })
+    expect(verifiedOptions.storeMethodMapper).toEqual({ ...defaultMapper, ...overridingMapper })
+
+    // Set to default storeMethodMapper if the given one is invalid
+    verifiedOptions = cacheOptionValidator({
+      storeMethodMapper: 'string'
+    })
+    expect(verifiedOptions.storeMethodMapper).toEqual(defaultMapper)
+  })
 })
