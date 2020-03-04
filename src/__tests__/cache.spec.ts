@@ -59,7 +59,7 @@ describe('~/cache.ts', () => {
     }
     const result = await testCache.get('key', getOptions)
     expect(result).toBe(swrResult)
-    expect(strategies.StaleWhileRevalidate).toHaveBeenCalledWith(testCache.store, 'key', fetchFunction, fetchErrorHandler)
+    expect(strategies.StaleWhileRevalidate).toHaveBeenCalledWith(testCache, 'key', fetchFunction, fetchErrorHandler)
   })
 
   it('.get calls CacheFirst if specified', async () => {
@@ -71,7 +71,7 @@ describe('~/cache.ts', () => {
     }
     const result = await testCache.get('key', getOptions)
     expect(result).toBe(cacheFirstResult)
-    expect(strategies.CacheFirst).toHaveBeenCalledWith(testCache.store, 'key', fetchFunction)
+    expect(strategies.CacheFirst).toHaveBeenCalledWith(testCache, 'key', fetchFunction)
   })
 
   it('.get calls FetchFirst if specified', async () => {
@@ -83,7 +83,7 @@ describe('~/cache.ts', () => {
     }
     const result = await testCache.get('key', getOptions)
     expect(result).toBe(fetchFirstResult)
-    expect(strategies.FetchFirst).toHaveBeenCalledWith(testCache.store, 'key', fetchFunction)
+    expect(strategies.FetchFirst).toHaveBeenCalledWith(testCache, 'key', fetchFunction)
   })
 
   it('.get calls FetchOnly if specified', async () => {
@@ -98,20 +98,65 @@ describe('~/cache.ts', () => {
     expect(strategies.FetchOnly).toHaveBeenCalledWith(fetchFunction)
   })
 
-  it('.get calls CacheOnly by default', async () => {
-    const testCache = new Cache()
-    const result = await testCache.get('key')
+  it('.get calls store.get by default and when specifing CacheOnly', async () => {
+    const mockStore = {
+      get: jest.fn(() => cacheOnlyResult),
+      set: () => undefined
+    }
+    const testCache = new Cache({
+      store: mockStore
+    })
+    let result = await testCache.get('key')
     expect(result).toBe(cacheOnlyResult)
-    expect(strategies.CacheOnly).toHaveBeenCalledWith(testCache.store, 'key')
-  })
 
-  it('.get calls CacheOnly if specified', async () => {
-    const testCache = new Cache()
     const getOptions: StrategicCache.GetOptions = {
       strategy: 'CacheOnly'
     }
-    const result = await testCache.get('key', getOptions)
+    result = await testCache.get('key', getOptions)
     expect(result).toBe(cacheOnlyResult)
-    expect(strategies.CacheOnly).toHaveBeenCalledWith(testCache.store, 'key')
+    expect(testCache.store.get).toHaveBeenCalledWith('key')
+    expect(testCache.store.get).toHaveBeenCalledTimes(2)
+  })
+
+  it('calls mapped store methods if storeMethodMapper is set', async () => {
+    const mockStore = {
+      mget: jest.fn(() => cacheOnlyResult),
+      mset: jest.fn(),
+      mkeys: jest.fn(() => ['key1', 'key2']),
+      mdel: jest.fn(),
+      mflush: jest.fn()
+    }
+    const testCache = new Cache({
+      store: mockStore,
+      storeMethodMapper: {
+        get: 'mget',
+        set: 'mset',
+        keys: 'mkeys',
+        delete: 'mdel',
+        flush: 'mflush'
+      }
+    })
+
+    // get mapping
+    const result = await testCache.get('key')
+    expect(result).toBe(cacheOnlyResult)
+    expect(mockStore.mget).toHaveBeenCalledWith('key')
+
+    // set mapping
+    await testCache.set('key', 'value')
+    expect(mockStore.mset).toHaveBeenCalledWith('key', 'value')
+
+    // keys mapping
+    const keys = await testCache.keys()
+    expect(keys).toEqual(['key1', 'key2'])
+    expect(mockStore.mkeys).toHaveBeenCalled()
+
+    // delete mapping
+    await testCache.delete('key')
+    expect(mockStore.mdel).toHaveBeenCalledWith('key')
+
+    // flush mapping
+    await testCache.flush()
+    expect(mockStore.mflush).toHaveBeenCalled()
   })
 })
