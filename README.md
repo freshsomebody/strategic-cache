@@ -111,10 +111,10 @@ const strategicCache = new StrategicCache({
 // Throw TypeError
 ```
 
-#### cacheOptions.StoreMethodMapper: object
-If method names of the cache store you are using are not completely the same with strategic-cache's. You can declare in `cacheOptions.StoreMethodMapper` to tell strategic-cache how to map them.
+#### cacheOptions.storeMethodMapper: object
+If method names of the cache store you are using are not completely the same with strategic-cache's. You can declare in `cacheOptions.storeMethodMapper` to tell strategic-cache how to map them.
 
-By default, `cacheOptions.StoreMethodMapper` maps methods as below:
+By default, `cacheOptions.storeMethodMapper` maps methods as below:
 ```javascript
 {
   get: 'get',
@@ -124,11 +124,11 @@ By default, `cacheOptions.StoreMethodMapper` maps methods as below:
   flush: 'flush'
 }
 ```
-If your cache store, for example, uses `del` instead of `delete` to delete a key. You can declare this difference in `cacheOptions.StoreMethodMapper` like:
+If your cache store, for example, uses `del` instead of `delete` to delete a key. You can declare this difference in `cacheOptions.storeMethodMapper` like:
 ```javascript
 const strategicCache = new StrategicCache({
   store: YOUR_CACHE_STORE,
-  StoreMethodMapper: {
+  storeMethodMapper: {
     delete: 'del'
   }
 })
