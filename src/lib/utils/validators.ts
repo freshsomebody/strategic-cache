@@ -1,4 +1,6 @@
 export function cacheOptionValidator (overrideOptions: StrategicCache.CacheOptions = {}): StrategicCache.CacheOptions {
+  const acceptableTypes: StrategicCache.CacheableTypes = ['number', 'bigint', 'string', 'boolean', 'object', 'symbol']
+
   const defaultOptions: StrategicCache.CacheOptions = {
     store: 'memory',
     fallbackStore: 'memory',
@@ -10,7 +12,8 @@ export function cacheOptionValidator (overrideOptions: StrategicCache.CacheOptio
       set: 'set',
       delete: 'delete',
       flush: 'flush'
-    }
+    },
+    cacheable: acceptableTypes
   }
   const options = { ...defaultOptions, ...overrideOptions }
 
@@ -23,7 +26,7 @@ export function cacheOptionValidator (overrideOptions: StrategicCache.CacheOptio
       storeErrorMsg = buildinStores.includes(store) ? '' : `${store} is not a supported store.`
       break
     case 'object':
-      storeErrorMsg = (!!store.get && !!store.set) ? '' : "'get' and 'set' methods are necessary for a store"
+      // storeErrorMsg = (!!store.get && !!store.set) ? '' : "'get' and 'set' methods are necessary for a store"
       break
     default:
       storeErrorMsg = `${typeof store}' is not a supported store type.`
@@ -61,6 +64,33 @@ export function cacheOptionValidator (overrideOptions: StrategicCache.CacheOptio
   } else {
     // Deep merge storeMethodMapper
     options.storeMethodMapper = { ...defaultMapper, ...overridingMapper }
+  }
+
+  // Verify cacheable
+  const { cacheable } = options
+  try {
+    if (Array.isArray(cacheable)) {
+      // Verify the elements in the array
+      options.cacheable = cacheable.filter(cacheableTypes => acceptableTypes.includes(cacheableTypes))
+      if (options.cacheable.length === 0) {
+        throw new TypeError('1')
+      }
+    } else if (typeof cacheable !== 'function') {
+      throw new TypeError('2')
+    }
+  } catch (error) {
+    switch (error.message) {
+      case '1':
+        console.warn(`cacheable should contain at least one valid type (${acceptableTypes.join(' | ')})`)
+        break
+      case '2':
+        console.warn(`cacheable doesn't support type '${typeof cacheable}'.`)
+        break
+      default:
+        console.warn(error.message)
+    }
+    console.warn("Fall back to ['number', 'string', 'boolean', 'object']")
+    options.cacheable = acceptableTypes
   }
 
   return options
