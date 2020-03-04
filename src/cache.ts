@@ -4,6 +4,7 @@ import { StaleWhileRevalidate, CacheFirst, FetchFirst, FetchOnly } from './lib/s
 export default class Cache implements StrategicCache.Cache {
   store: StrategicCache.Store
   storeMethodMapper: StrategicCache.StoreMethodMapper
+  cacheable: StrategicCache.CacheableTypes | StrategicCache.CacheableFunction
 
   constructor (overrideOptions: StrategicCache.CacheOptions = {}) {
     const options = cacheOptionValidator(overrideOptions)
@@ -18,8 +19,8 @@ export default class Cache implements StrategicCache.Cache {
       this.store = new StoreModule(options)
     }
 
-    // Set storeMethodMapper
     this.storeMethodMapper = options.storeMethodMapper
+    this.cacheable = options.cacheable
   }
 
   async get (key: string, overrideOptions: StrategicCache.GetOptions = {}) {
@@ -53,6 +54,23 @@ export default class Cache implements StrategicCache.Cache {
   }
 
   set (key: string, value: unknown) {
+    const { cacheable } = this
+    const valueType = typeof value
+    // Types undefined and function are not cacheable
+    if (valueType === 'undefined' || valueType === 'function') {
+      throw new TypeError(`'${valueType}' is not a cacheable type.`)
+    }
+
+    /**
+     * Arguable TypeScript error when using cacheable.includes(valueType)
+     * @see https://github.com/microsoft/TypeScript/issues/26255
+     * @todo keep track of the issue
+     */
+    if (Array.isArray(cacheable) && !(cacheable as string[]).includes(valueType)) {
+      throw new TypeError(`'${valueType}' is not a cacheable type.`)
+    } else if (typeof cacheable === 'function' && !cacheable(value)) {
+      throw new TypeError(`'${value}' is not a cacheable value.`)
+    }
     return this.store[this.storeMethodMapper.set](key, value)
   }
 
