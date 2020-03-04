@@ -27,6 +27,7 @@ export default class MemoryStore implements StrategicCache.Store {
   /**
    * Get the entry value of the given key
    * @param key key of the entry to be got
+   * @returns cached value if cache hits; undefined if cache misses
    */
   get (key: string): unknown | undefined {
     if (!this.store[key] || this.isExpired(key) || this.store[key].value === undefined) {
