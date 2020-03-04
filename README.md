@@ -238,7 +238,7 @@ To fix that, remember to return the data in your fetchFunction
 ```javascript
 async function correctFetchFunction () {
   const user = await UserModel.get()
-  return user() // <- remember to return
+  return user // <- remember to return
 }
 ```
 
