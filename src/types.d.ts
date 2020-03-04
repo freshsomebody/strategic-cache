@@ -6,7 +6,8 @@ declare namespace StrategicCache {
     fallbackStore?: BuildinStore | false
     maxAgeSeconds?: number
     maxEntries?: number,
-    storeMethodMapper?: StoreMethodMapper
+    storeMethodMapper?: StoreMethodMapper,
+    cacheable?: CacheableTypes | CacheableFunction
   }
   interface StoreMethodMapper {
     get?: string,
@@ -15,6 +16,8 @@ declare namespace StrategicCache {
     delete?: string,
     flush?: string
   }
+  type CacheableTypes = ('number' | 'bigint' | 'string' | 'boolean' | 'object' | 'symbol')[]
+  type CacheableFunction = (cacheValue: any) => boolean
 
   interface GetOptions {
     strategy?: CacheStrategie,
@@ -64,6 +67,7 @@ declare namespace StrategicCache {
   interface Cache extends Store {
     store: Store
     storeMethodMapper: StoreMethodMapper
+    cacheable: CacheableTypes | CacheableFunction
     // Get the entry value of the given key
     get(key: string, options?: GetOptions): Promise<unknown | undefined>
     // Get all entry keys in the cache
