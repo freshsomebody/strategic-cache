@@ -159,4 +159,76 @@ describe('~/cache.ts', () => {
     await testCache.flush()
     expect(mockStore.mflush).toHaveBeenCalled()
   })
+
+  it('.set checks whether the given value is cacheable', () => {
+    // Default
+    let testCache = new Cache()
+    expect(() => {
+      testCache.set('k', 'string')
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k', 1)
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k', BigInt(9007199254740991))
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k', true)
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k', { a: 1 })
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k', Symbol('test'))
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k')
+    }).toThrow()
+    expect(() => {
+      testCache.set('k', () => 1)
+    }).toThrow()
+
+    // Only type string is cacheable
+    const cacheableTypes = ['string']
+    testCache = new Cache({
+      cacheable: cacheableTypes
+    })
+    expect(() => {
+      testCache.set('k', 'string')
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k', 1)
+    }).toThrow()
+    expect(() => {
+      testCache.set('k', BigInt(9007199254740991))
+    }).toThrow()
+    expect(() => {
+      testCache.set('k', true)
+    }).toThrow()
+    expect(() => {
+      testCache.set('k', { a: 1 })
+    }).toThrow()
+    expect(() => {
+      testCache.set('k', Symbol('test'))
+    }).toThrow()
+    expect(() => {
+      testCache.set('k')
+    }).toThrow()
+    expect(() => {
+      testCache.set('k', () => 1)
+    }).toThrow()
+
+    // Cacheable function checks
+    const cacheableFunc = jest.fn((value: any) => (value === 1))
+    testCache = new Cache({
+      cacheable: cacheableFunc
+    })
+    expect(() => {
+      testCache.set('k', 1)
+    }).not.toThrow()
+    expect(() => {
+      testCache.set('k', true)
+    }).toThrow()
+    expect(cacheableFunc).toHaveBeenCalledTimes(2)
+  })
 })
