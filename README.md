@@ -154,6 +154,45 @@ const strategicCache = new StrategicCache({
 })
 ```
 
+#### cacheOptions.cacheable: string[] | Function
+Limits what kinds of values can be set into the cache. You can pass an array with all the cacheable types or a function which checks whether the given value is cacheable. By default, strategic-cache caches everything except types `undefined` and `function`.
+
+By using an array, you can pass the cacheable types in strings of [JavaScript typeof returns](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#Description) to the array. For example, if you want to cache `string` and `boolean` types of values only, you can set `cacheOptions.cacheable` as:
+```javascript
+const strategicCache = new StrategicCache({
+  cacheable: ['string', 'boolean']
+})
+```
+> **NOTE**: Types `undefined` and `function` will never be cacheable even if you set `cacheOptions.cacheable` with `['undefined', 'function']`
+
+You can also pass a function to define what values are cacheable. strategic-cache will cache a value if the function returns `true`. For example, if you want to cache positive numeric values only, you can set `cacheOptions.cacheable` as:
+```javascript
+const strategicCache = new StrategicCache({
+  cacheable: (value) => {
+    return (typeof value === 'number' && value > 0)
+  }
+})
+```
+
+Note that `cacheOptions.cacheable` affects not only the `.set` methods but also the [`get-strategies`](#getoptionsstrategy-stalewhilerevalidate--cachefirst--fetchfirst--fetchonly--cacheonly) which update the cache store. For example:
+```javascript
+const strategicCache = new StrategicCache({
+  cacheable: ['string', 'boolean']
+})
+
+strategicCache.set('k1', 'I am a string') // cache sucessfully
+strategicCache.set('k2', false) // cache sucessfully
+strategicCache.set('k3', 1) // Throw TypeError: 'number' is not a cacheable type
+
+strategicCache.get('k4', {
+  strategy: 'FetchFirst',
+  fetchFunction: () => 1
+})
+  .then(cacheData => console.log(cacheData)) // Will fail to resolve
+  .catch(error => console.log(error)) // Log TypeError: 'number' is not a cacheable type
+
+```
+
 ### Retrieve data
 You can use `.get` method to perform various retrieval strategies. strategic-cache provides an easy way for you to wrap you own data fetching function within `getOptions.fetchFunction` and decide when the cache should be updated by `getOptions.strategy`.
 ```javascript
