@@ -111,6 +111,33 @@ const strategicCache = new StrategicCache({
 // Throw TypeError
 ```
 
+#### cacheOptions.StoreMethodMapper: object
+If method names of the cache store you are using are not completely the same with strategic-cache's. You can declare in `cacheOptions.StoreMethodMapper` to tell strategic-cache how to map them.
+
+By default, `cacheOptions.StoreMethodMapper` maps methods as below:
+```javascript
+{
+  get: 'get',
+  keys: 'keys',
+  set: 'set',
+  delete: 'delete',
+  flush: 'flush'
+}
+```
+If your cache store, for example, uses `del` instead of `delete` to delete a key. You can declare this difference in `cacheOptions.StoreMethodMapper` like:
+```javascript
+const strategicCache = new StrategicCache({
+  store: YOUR_CACHE_STORE,
+  StoreMethodMapper: {
+    delete: 'del'
+  }
+})
+```
+strategic-cache will still expose `delete` but actually calls `del` of your cache store to delete the key.
+```javascript
+strategicCache.delete('cacheKey') // Actually calling YOUR_CACHE_STORE.del('cacheKey')
+```
+
 #### cacheOptions.maxAgeSeconds: number
 The maximum age of a cache entry in seconds. It is `0` in default which means maxAgeSeconds disabled.
 ```javascript
