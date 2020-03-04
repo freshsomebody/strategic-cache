@@ -6,11 +6,12 @@
  * @param fetchFunction function for fetching value
  */
 export default async function FetchFirst (cacheInterface: StrategicCache.Cache, key: string, fetchFunction: Function) {
+  let cacheValue
   try {
-    const cacheValue = await fetchFunction()
-    await cacheInterface.set(key, cacheValue)
-    return cacheValue
+    cacheValue = await fetchFunction()
   } catch (error) {
     return cacheInterface.get(key)
   }
+  await cacheInterface.set(key, cacheValue)
+  return cacheValue
 }
