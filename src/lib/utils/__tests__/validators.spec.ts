@@ -83,4 +83,37 @@ describe('~/lib/utils/validators.ts', () => {
     })
     expect(verifiedOptions.storeMethodMapper).toEqual(defaultMapper)
   })
+
+  test('cacheOptionValidator verifies cacheable correctly', () => {
+    const defaultCacheable = ['number', 'bigint', 'string', 'boolean', 'object', 'symbol']
+    // Return ['number', 'bigint', 'string', 'boolean', 'object', 'symbol'] in default
+    let verifiedOptions = cacheOptionValidator()
+    expect(verifiedOptions.cacheable).toEqual(defaultCacheable)
+
+    // Return overrided cacheable if given
+    const overridingCacheableTypes = ['string', 'boolean']
+    verifiedOptions = cacheOptionValidator({
+      cacheable: overridingCacheableTypes
+    })
+    expect(verifiedOptions.cacheable).toEqual(overridingCacheableTypes)
+
+    const overridingCacheableFunc = () => true
+    verifiedOptions = cacheOptionValidator({
+      cacheable: overridingCacheableFunc
+    })
+    expect(verifiedOptions.cacheable).toEqual(overridingCacheableFunc)
+
+    // Set to default if the given option is invalid
+    let invalidCacheableTypes: string[] | string = ['type1', 'type2']
+    verifiedOptions = cacheOptionValidator({
+      cacheable: invalidCacheableTypes
+    })
+    expect(verifiedOptions.cacheable).toEqual(defaultCacheable)
+
+    invalidCacheableTypes = 'stringInput'
+    verifiedOptions = cacheOptionValidator({
+      cacheable: invalidCacheableTypes
+    })
+    expect(verifiedOptions.cacheable).toEqual(defaultCacheable)
+  })
 })
