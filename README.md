@@ -56,8 +56,10 @@ The optional `cacheOptions` contains following properties:
 cacheOptions = {
   store?: 'memory' | Object,
   fallbackStore?: 'memory' | false,
+  storeMethodMapper?: Object,
   maxAgeSeconds?: number,
-  maxEntries?: number
+  maxEntries?: number,
+  cacheable?: string[] | Function
 }
 ```
 #### cacheOptions.store: 'memory' | Object
